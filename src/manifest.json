@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Web Resource Downloader",
+  "version": "2.1",
+  "description": "Captures and downloads resources from web pages",
+  "permissions": [
+    "downloads",
+    "debugger",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "js/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "html/popup.html",
+    "default_icon": "icons/icon-inactive-128.png"
+  },
+  "icons": {
+    "128": "icons/icon-inactive-128.png"
+  }
+}

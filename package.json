@@ -1,0 +1,13 @@
+{
+  "name": "web-resource-dl-chrome-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension for capturing and downloading web resources",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
+  "devDependencies": {
+    "archiver": "^5.3.1",
+    "canvas": "^3.0.0",
+    "fs-extra": "^11.1.1"
+  }
+}

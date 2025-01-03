@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resource Downloader</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="../css/styles.css" rel="stylesheet">
+  <style>
+    body {
+      width: 600px;
+      font-family: Arial, sans-serif;
+    }
+    .status {
+      padding: 5px;
+      margin: 5px 0;
+      border-radius: 3px;
+    }
+    .active {
+      background-color: #e6ffe6;
+      color: #006600;
+    }
+    .inactive {
+      background-color: #ffe6e6;
+      color: #660000;
+    }
+    .controls {
+      margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .response-item {
+      border: 1px solid #ccc;
+      margin: 5px 0;
+      padding: 10px;
+      border-radius: 3px;
+    }
+    .sort-button {
+      padding: 5px 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .sort-button .arrow {
+      display: inline-block;
+      transition: transform 0.2s;
+      font-size: 12px;
+    }
+    .sort-button.asc .arrow {
+      transform: rotate(180deg);
+    }
+    .sort-button.desc .arrow {
+      transform: rotate(0deg);
+    }
+    select, button {
+      padding: 5px 10px;
+      border-radius: 3px;
+      border: 1px solid #ccc;
+    }
+    .stats {
+      margin: 10px 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;      
+    }
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background-color: #4CAF50;  /* Default green color */
+      color: #fff;
+      transition: background-color 0.3s ease;
+    }
+    .btn-primary.is-capturing {
+      background-color: #2196F3;  /* Blue color when capturing */
+    }
+    .btn-icon {
+      padding: 10px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+    }
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+    .stats {
+      display: flex;
+      align-items: center;
+    }
+    .total-size {
+      margin-right: 10px;
+    }
+    .response-container {
+      padding: 5px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .response-list {
+      padding: 20px;
+    }
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    .empty-subtitle {
+      color: #666;
+    }
+    .search-container {
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 14px;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: #4CAF50;
+      box-shadow: 0 0 3px rgba(76, 175, 80, 0.3);
+    }
+    .sort-menu {
+      position: relative;
+      display: inline-block;
+    }
+    .sort-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: none;
+      z-index: 1000;
+      min-width: 150px;
+    }
+    .sort-dropdown.show {
+      display: block;
+    }
+    .sort-option {
+      padding: 8px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .sort-option:hover {
+      background-color: #f5f5f5;
+    }
+    .sort-option .material-icons {
+      font-size: 18px;
+      opacity: 0.7;
+    }
+    .sort-option.active {
+      background-color: #e8f5e9;
+      color: #4CAF50;
+    }
+    .sort-option.active .material-icons {
+      opacity: 1;
+      color: #4CAF50;
+    }
+    .sort-direction-icon {
+      transition: transform 0.2s ease;
+    }
+    .sort-direction-icon.asc {
+      transform: rotate(180deg);
+    }
+    .response-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #666;
+      font-size: 0.9em;
+    }
+    .response-meta > span {
+      white-space: nowrap;
+    }
+    .response-meta .response-size {
+      margin-left: auto;
+    }
+    .filter-select {
+      width: 200px;
+      min-width: 200px;
+      text-overflow: ellipsis;
+      padding-right: 24px; /* Space for the dropdown arrow */
+    }
+    /* For Firefox */
+    .filter-select option {
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <button id="toggleCapture" class="btn btn-primary">
+        <span class="material-icons capture-icon">fiber_manual_record</span>
+        <span class="btn-text">Start Capturing</span>
+      </button>
+      <div class="header-controls">
+        <select id="filterType" class="filter-select" title="Filter by Content-Type">
+          <option value="all">All Content Types</option>
+        </select>
+        <button id="clearResponses" class="btn btn-icon" title="Clear All">
+          <span class="material-icons">delete</span>
+        </button>
+        <div class="sort-menu">
+          <button id="sortMenu" class="btn btn-icon" title="Sort Options">
+            <span class="material-icons">sort</span>
+          </button>
+          <div id="sortDropdown" class="sort-dropdown">
+            <div class="sort-option" data-sort="size">
+              <span class="material-icons">data_usage</span>
+              Sort by Size
+            </div>
+            <div class="sort-option" data-sort="timestamp">
+              <span class="material-icons">schedule</span>
+              Sort by Date
+            </div>
+            <div class="sort-option" data-sort="url">
+              <span class="material-icons">link</span>
+              Sort by URL
+            </div>
+          </div>
+        </div>
+        <button id="sortDirection" class="btn btn-icon" title="Toggle Sort Direction">
+          <span class="material-icons sort-direction-icon">keyboard_arrow_down</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stats">
+        <span class="material-icons stats-icon">analytics</span>
+        Showing <strong id="visibleCount">0</strong> of <strong id="totalCount">0</strong> responses
+      </div>
+      <div class="stats total-size">
+        Total size: <strong id="totalSize">0 B</strong>
+      </div>
+    </div>
+
+    <div class="search-container">
+      <input type="text" id="searchFilter" class="search-input" placeholder="Search responses by URL..." />
+    </div>
+
+    <div class="response-container">
+      <div id="empty-state" class="empty-state">
+        <span class="material-icons empty-icon">inbox</span>
+        <p>No responses captured yet</p>
+        <p class="empty-subtitle">Start capturing to see responses here</p>
+      </div>
+      <div id="responseList" class="response-list"></div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/popup.js"></script>
+</body>
+</html>
