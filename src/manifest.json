@@ -4,7 +4,6 @@
   "version": "2.1",
   "description": "Captures and downloads resources from web pages",
   "permissions": [
-    "downloads",
     "debugger",
     "tabs"
   ],
